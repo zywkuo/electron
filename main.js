@@ -18,20 +18,33 @@ const path = require("path");
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    x: 200,
-    y: 200,
+    // x: 200,
+    // y: 200,
     show: false,
-    width: 800,
-    height: 600,
-    maxWidth: 1000,
-    maxHeight: 800,
+    width: 1200,
+    height: 1000,
+    maxWidth: 1600,
+    maxHeight: 1200,
     minWidth: 400,
     minHeight: 300,
     // resizable: false,   // 禁止缩放
+    title: "My App", // 应用标题
+    icon: "favicon.ico", // 窗口图标。 在 Windows 上推荐使用 ICO 图标来获得最佳的视觉效果, 默认使用可执行文件的图标.
+    // frame: false, // 用于自定义menu 设置为false 可以将默认菜单隐藏
+    // transparent: true, // 背景透明
+    // autoHideMenuBar: true, // 自动隐藏菜单栏
     webPreferences: {
+      nodeIntegration: true, //启用Node integration 渲染进程可以使用node
       preload: path.join(__dirname, "preload.js"),
     },
   });
+
+  // 使用remote模块
+  // 先下载依赖 npm install --save @electron/remote
+  // main导入remote模块
+  require("@electron/remote/main").initialize();
+  require("@electron/remote/main").enable(mainWindow.webContents);
+  // 子页面引入 const remote = require("@electron/remote")
 
   // and load the index.html of the app.
   mainWindow.loadFile("index.html");
