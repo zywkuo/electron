@@ -1,6 +1,9 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, Menu, ipcMain } = require("electron");
 const path = require("path");
+
+// main初始化remote模块
+require("@electron/remote/main").initialize();
 
 /**
  * 声明周期
@@ -23,8 +26,8 @@ function createWindow() {
     show: false,
     width: 1200,
     height: 1000,
-    maxWidth: 1600,
-    maxHeight: 1200,
+    // maxWidth: 1600,
+    // maxHeight: 1200,
     minWidth: 400,
     minHeight: 300,
     // resizable: false,   // 禁止缩放
@@ -35,19 +38,129 @@ function createWindow() {
     // autoHideMenuBar: true, // 自动隐藏菜单栏
     webPreferences: {
       nodeIntegration: true, //启用Node integration 渲染进程可以使用node
+      contextIsolation: false,
       preload: path.join(__dirname, "preload.js"),
     },
   });
 
+  // 自定义菜单
+  let menuTemp = [
+    {
+      label: "文件",
+      submenu: [
+        {
+          label: "打开",
+          accelerator: "Ctrl+O",
+          click() {
+            console.log("open");
+          },
+        },
+        {
+          type: "separator",
+        },
+        {
+          label: "向渲染进程发送消息",
+          click() {
+            BrowserWindow.getFocusedWindow().webContents.send(
+              "mtp",
+              "来自于主进程的消息"
+            );
+          },
+        },
+        {
+          label: "关于",
+          role: "about",
+        },
+        {
+          label: "复制",
+          role: "copy",
+        },
+        {
+          label: "粘贴",
+          role: "paste",
+        },
+        {
+          label: "剪切",
+          role: "cut",
+        },
+        {
+          label: "最小化",
+          role: "minimize",
+        },
+        {
+          label: "撤销",
+          role: "undo",
+        },
+      ],
+    },
+    {
+      label: "类型",
+      submenu: [
+        {
+          label: "选项一",
+          type: "checkbox",
+        },
+        {
+          label: "选项二",
+          type: "checkbox",
+        },
+        {
+          label: "选项三",
+          type: "checkbox",
+        },
+        {
+          type: "separator",
+        },
+        {
+          label: "item1",
+          type: "radio",
+        },
+        {
+          label: "item2",
+          type: "radio",
+        },
+        {
+          type: "separator",
+        },
+        {
+          label: "mac",
+          type: "submenu",
+          role: "windowMenu",
+        },
+      ],
+    },
+    {
+      label: "其他",
+      submenu: [
+        {
+          label: "打开",
+          icon: "./images/bmh.png",
+          accelerator: "ctrl + o",
+          click() {
+            console.log("open 操作执行了");
+          },
+        },
+      ],
+    },
+  ];
+  if (process.platform == "darwin") {
+    // mac 空占位
+    menuTemp.unshift({ label: "" });
+  }
+  let menu = Menu.buildFromTemplate(menuTemp);
+  Menu.setApplicationMenu(menu);
+
   // 使用remote模块
   // 先下载依赖 npm install --save @electron/remote
   // main导入remote模块
-  require("@electron/remote/main").initialize();
   require("@electron/remote/main").enable(mainWindow.webContents);
   // 子页面引入 const remote = require("@electron/remote")
 
   // and load the index.html of the app.
   mainWindow.loadFile("index.html");
+
+  // 打开控制台
+  mainWindow.webContents.openDevTools();
 
   // 与show: false,配合，防止白屏
   mainWindow.on("ready-to-show", () => {
@@ -70,6 +183,8 @@ function createWindow() {
   //   // mainWindow = null;
   // });
 }
+
+// app.enableSandbox();
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -110,3 +225,14 @@ app.on("window-all-closed", function () {
 // app.on("quit", function () {
 //   console.log("7--->quit");
 // });
+
+// 主进程接收消息操作
+ipcMain.on("msg1", (e, data) => {
+  console.log("msg1", data);
+  e.sender.send("msg1Re", "主进程的异步消息");
+});
+
+ipcMain.on("msg2", (e, data) => {
+  console.log("msg2", data);
+  e.returnValue = "主进程的同步消息";
+});
