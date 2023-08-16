@@ -204,4 +204,5 @@ window.addEventListener("DOMContentLoaded", () => {
   dialogBtnErr.addEventListener("click", () => {
     dialog.showErrorBox("错误标题", "错误内容");
   });
+  
 });
