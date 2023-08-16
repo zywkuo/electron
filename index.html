@@ -15,40 +15,44 @@
     We are using Node.js <span id="node-version"></span>, Chromium
     <span id="chrome-version"></span>, and Electron
     <span id="electron-version"></span>.
+
     <hr />
-    <div>
-      <button id="btn">点击打开新窗口</button>
-    </div>
-    <div>
-      <button id="newpage_minimize_btn">最小化</button>
-    </div>
-    <div>
-      <button id="newpage_maximize_btn">最大化</button>
-    </div>
-    <div>
-      <button id="newpage_close_btn">关闭</button>
-    </div>
+    <button id="btn">点击打开新窗口</button>
+    <br />
+    <button id="newpage_minimize_btn">最小化</button>
+    <br />
+    <button id="newpage_maximize_btn">最大化</button>
+    <br />
+    <button id="newpage_close_btn">关闭</button>
     <div id="confirmBox" style="display: none">
       <button id="yes_btn">关闭</button><button id="no_btn">取消</button>
     </div>
+
     <hr />
-    <div>
-      <button id="addMenu">创建自定义菜单</button>
-    </div>
-    <div>
-      <input type="text" placeholder="请输入菜单项内容" id="menuCon" />
-    </div>
-    <div>
-      <button id="addItem">添加菜单项</button>
-    </div>
+    <button id="addMenu">创建自定义菜单</button>
+    <br />
+    <input type="text" placeholder="请输入菜单项内容" id="menuCon" />
+    <br />
+    <button id="addItem">添加菜单项</button>
+
     <hr />
-    <div>渲染进程与主进程通信</div>
-    <div>
-      <button id="asynBtn">渲染到主异步操作</button>
-    </div>
-    <div>
-      <button id="syncBtn">渲染到主同步操作</button>
-    </div>
+    渲染进程与主进程通信
+    <br />
+    <button id="asynBtn">渲染到主异步操作</button>
+    <br />
+    <button id="syncBtn">渲染到主同步操作</button>
+
+    <hr />
+    渲染进程间通信
+    <br />
+    <button id="openWin2">打开窗口2</button>
+
+    <hr />
+    Dialog 模块
+    <br />
+    <button id="dialog_btn">显示对话框</button>
+    <br />
+    <button id="dialog_btn_err">错误对话框</button>
     <!-- You can also require other files to run in this process -->
     <script src="./renderer.js"></script>
     <script src="./index.js"></script>

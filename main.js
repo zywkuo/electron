@@ -17,6 +17,9 @@ require("@electron/remote/main").initialize();
     closed: 当窗口关闭时触发，此时应删除窗口引用
  */
 
+// 定义全局变量，存放主窗口id
+let mainWinId = null;
+
 // 创建窗口
 function createWindow() {
   // Create the browser window.
@@ -159,6 +162,8 @@ function createWindow() {
   // and load the index.html of the app.
   mainWindow.loadFile("index.html");
 
+  mainWinId = mainWindow.id;
+
   // 打开控制台
   mainWindow.webContents.openDevTools();
 
@@ -235,4 +240,41 @@ ipcMain.on("msg1", (e, data) => {
 ipcMain.on("msg2", (e, data) => {
   console.log("msg2", data);
   e.returnValue = "主进程的同步消息";
+});
+
+// 渲染进程间通信
+ipcMain.on("openWin2", (e, data) => {
+  // 接收渲染进程按钮后，打开窗口2
+  let subWin1 = new BrowserWindow({
+    width: 400,
+    height: 300,
+    title: "窗口2",
+    parent: BrowserWindow.fromId(mainWinId),
+    webPreferences: {
+      nodeIntegration: true, //启用Node integration 渲染进程可以使用node
+      contextIsolation: false,
+    },
+  });
+
+  subWin1.loadFile("src/pages/sbuWin1/index.html");
+
+  // 打开控制台
+  subWin1.webContents.openDevTools();
+
+  subWin1.on("close", () => {
+    subWin1 = null;
+  });
+
+  // 加载完成后发送数据
+  subWin1.webContents.on("did-finish-load", () => {
+    subWin1.webContents.send("its", data);
+  });
+});
+
+ipcMain.on("stm", (e, data) => {
+  console.log("stm", data);
+  // 将data经过main 主进程转到index渲染进程
+  // 根据窗口id 获取渲染进程，执行发送
+  let mainWin = BrowserWindow.fromId(mainWinId);
+  mainWin.webContents.send("mti", data);
 });

@@ -3,6 +3,7 @@ const {
   getCurrentWindow,
   Menu,
   MenuItem,
+  dialog,
 } = require("@electron/remote");
 const { ipcRenderer } = require("electron");
 
@@ -163,5 +164,44 @@ window.addEventListener("DOMContentLoaded", () => {
   // 接收主进程的消息
   ipcRenderer.on("mtp", (e, data) => {
     console.log("mtp", data);
+  });
+
+  // 渲染进程间通信
+  let openWin2 = document.getElementById("openWin2");
+  openWin2.addEventListener("click", () => {
+    ipcRenderer.send("openWin2", "来自于index进程数据");
+    // 打开窗口2之后，保存数据
+    localStorage.setItem("name", "zyw");
+  });
+
+  // 接收消息
+  ipcRenderer.on("mti", (e, data) => {
+    console.log("mti", data);
+  });
+
+  // Dialog
+  let dialogBtn = document.getElementById("dialog_btn");
+  dialogBtn.addEventListener("click", () => {
+    dialog.showOpenDialogSync(
+      {
+        defaultPath: __dirname, // 显示当前文件路径
+        buttonLabel: "请选择",
+        title: "自定义titile",
+        properties: ["openFile", "multiSelections"],
+        filters: [
+          { name: "Images", extensions: ["jpg", "png", "gif", "ico"] },
+          { name: "Movies", extensions: ["mkv", "avi", "mp4"] },
+          { name: "All Files", extensions: ["*"] },
+        ],
+      },
+      (result) => {
+        console.log("result", result);
+      }
+    );
+  });
+
+  let dialogBtnErr = document.getElementById("dialog_btn_err");
+  dialogBtnErr.addEventListener("click", () => {
+    dialog.showErrorBox("错误标题", "错误内容");
   });
 });
