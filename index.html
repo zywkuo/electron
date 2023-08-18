@@ -2,11 +2,13 @@
 <html>
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta
+    <!-- <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
-    />
+    /> -->
+
     <link href="./styles.css" rel="stylesheet" />
     <title></title>
   </head>
@@ -67,6 +69,18 @@
     基于H5实现消息通知
     <br />
     <button id="msgBtn">触发消息</button>
+
+    <hr />
+    剪切板
+    <br />
+    <input type="text" id="copyText" />
+    <button id="copuBtn">复制</button>
+    <br />
+    <input type="text" id="pasteText" />
+    <button id="pasteBtn">粘贴</button>
+    <br />
+    <button id="clipImgBtn">将图片拷贝纸剪切板在粘贴值界面</button>
+    <img src="" alt="" />
 
     <!-- You can also require other files to run in this process -->
     <script src="./renderer.js"></script>

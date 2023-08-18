@@ -5,7 +5,7 @@ const {
   MenuItem,
   dialog,
 } = require("@electron/remote");
-const { ipcRenderer, shell } = require("electron");
+const { ipcRenderer, shell, clipboard, nativeImage } = require("electron");
 const path = require("path");
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -251,5 +251,32 @@ window.addEventListener("DOMContentLoaded", () => {
     myNotification.addEventListener("click", () => {
       console.log("点击了消息");
     });
+  });
+
+  // 剪切板
+  let copyText = document.getElementById("copyText");
+  let copuBtn = document.getElementById("copuBtn");
+  let pasteText = document.getElementById("pasteText");
+  let pasteBtn = document.getElementById("pasteBtn");
+  let clipImgBtn = document.getElementById("clipImgBtn");
+
+  let realCopyText;
+  copuBtn.addEventListener("click", () => {
+    realCopyText = clipboard.writeText(copyText.value);
+  });
+
+  pasteBtn.addEventListener("click", () => {
+    pasteText.value = clipboard.readText(realCopyText);
+  });
+
+  clipImgBtn.addEventListener("click", () => {
+    // 图片放置剪切板 要求图片属于 nativeImage 实例
+    let oImage = nativeImage.createFromPath("./images/bmh.png");
+    clipboard.writeImage(oImage);
+    // 将剪切板中图片作为dom放在元素界面上
+    let oImg = clipboard.readImage();
+    let oImgDom = new Image();
+    oImgDom.src = oImg.toDataURL();
+    document.body.appendChild(oImgDom);
   });
 });
