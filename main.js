@@ -1,5 +1,12 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu, ipcMain } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  Menu,
+  ipcMain,
+  shell,
+  globalShortcut,
+} = require("electron");
 const path = require("path");
 
 // main初始化remote模块
@@ -143,6 +150,18 @@ function createWindow() {
             console.log("open 操作执行了");
           },
         },
+        {
+          label: "打开网址-本机浏览器",
+          click() {
+            shell.openExternal("https://www.baidu.com/");
+          },
+        },
+        {
+          label: "打开网址-内置浏览器",
+          click() {
+            BrowserWindow.getFocusedWindow().webContents.send("openUrl");
+          },
+        },
       ],
     },
   ];
@@ -277,4 +296,20 @@ ipcMain.on("stm", (e, data) => {
   // 根据窗口id 获取渲染进程，执行发送
   let mainWin = BrowserWindow.fromId(mainWinId);
   mainWin.webContents.send("mti", data);
+});
+
+app.on("ready", () => {
+  // 注册快捷键
+  let res = globalShortcut.register("ctrl + q", () => {
+    console.log("快捷键注册成功");
+  });
+  if (!res) {
+    console.log("注册失败");
+  }
+  console.log("ctrl + q 是否注册成功", globalShortcut.isRegistered("ctrl + q"));
+});
+
+app.on("will-quit", () => {
+  // 取消快捷键
+  globalShortcut.unregister("ctrl + q");
 });

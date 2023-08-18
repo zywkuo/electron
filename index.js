@@ -5,7 +5,8 @@ const {
   MenuItem,
   dialog,
 } = require("@electron/remote");
-const { ipcRenderer } = require("electron");
+const { ipcRenderer, shell } = require("electron");
+const path = require("path");
 
 window.addEventListener("DOMContentLoaded", () => {
   // 点击按钮打开新窗口
@@ -204,5 +205,51 @@ window.addEventListener("DOMContentLoaded", () => {
   dialogBtnErr.addEventListener("click", () => {
     dialog.showErrorBox("错误标题", "错误内容");
   });
-  
+
+  // shell 与 iframe
+  let shellOpen = document.getElementById("shellOpen");
+  let shellFolder = document.getElementById("shellFolder");
+
+  shellOpen.addEventListener("click", (e) => {
+    e.preventDefault();
+    let urlPath = shellOpen.getAttribute("href");
+    shell.openExternal(urlPath);
+  });
+
+  // 会卡死
+  shellFolder.addEventListener("click", (e) => {
+    shell.showItemInFolder(path.resolve(__filename));
+  });
+
+  ipcRenderer.on("openUrl", () => {
+    // let iframe = document.getElementById("iframe");
+    // iframe.src = "https://www.baidu.com/";
+    let a = document.createElement("a");
+    a.setAttribute("href", "https://www.baidu.com/");
+    a.setAttribute("target", "_blank");
+    //给个id,可以在触发点击事件后移除这个a链接元素
+    a.setAttribute("id", "openLink");
+    // 防止反复添加
+    if (document.getElementById("openLink")) {
+      document.body.removeChild(document.getElementById("openLink"));
+    }
+    document.body.appendChild(a);
+    //触发点击事件
+    a.click();
+  });
+
+  // 基于H5实现消息通知
+  let msgBtn = document.getElementById("msgBtn");
+  msgBtn.addEventListener("click", () => {
+    let option = {
+      title: "标题",
+      body: "内容",
+      icon: "./favicon.ico",
+    };
+
+    let myNotification = new window.Notification(option.title, option);
+    myNotification.addEventListener("click", () => {
+      console.log("点击了消息");
+    });
+  });
 });
